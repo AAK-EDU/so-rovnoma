@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опрос об образовании и цифровых технологиях | Ta'lim va raqamli vositalar so'rovi</title>
+    <meta name="description" content="Анонимный опрос о преподавании, обучении и инструментах на основе ИИ в школах Узбекистана">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.12);
+        }
+        
+        .radio-custom:checked + label {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .checkbox-custom:checked + label {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .progress-step {
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .progress-step.completed {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-graduation-cap text-3xl"></i>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold" id="headerTitle">
+                            Опрос об образовании и цифровых инструментах
+                        </h1>
+                        <p class="text-sm opacity-90" id="headerSubtitle">
+                            Анонимный опрос для школ Узбекистана
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Language Toggle -->
+                <button id="langToggle" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-all flex items-center space-x-2">
+                    <i class="fas fa-language"></i>
+                    <span id="langText">O'zbek</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <!-- Welcome Section -->
+        <section id="welcomeSection" class="bg-white rounded-2xl p-8 md:p-12 card-shadow mb-8 fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-purple-100 rounded-full p-4 mb-4">
+                    <i class="fas fa-chart-line text-4xl text-purple-600"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4" id="welcomeTitle">
+                    Добро пожаловать!
+                </h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto" id="welcomeDescription">
+                    Этот опрос поможет нам понять, как цифровые технологии и инструменты на основе ИИ используются 
+                    в образовании. Ваши ответы полностью анонимны и помогут улучшить качество обучения.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="text-center p-6 bg-blue-50 rounded-xl">
+                    <i class="fas fa-user-shield text-3xl text-blue-600 mb-3"></i>
+                    <h3 class="font-semibold text-gray-800 mb-2" id="feature1Title">Полная анонимность</h3>
+                    <p class="text-sm text-gray-600" id="feature1Desc">Личные данные не собираются</p>
+                </div>
+                <div class="text-center p-6 bg-green-50 rounded-xl">
+                    <i class="fas fa-clock text-3xl text-green-600 mb-3"></i>
+                    <h3 class="font-semibold text-gray-800 mb-2" id="feature2Title">5-7 минут</h3>
+                    <p class="text-sm text-gray-600" id="feature2Desc">Быстрое прохождение</p>
+                </div>
+                <div class="text-center p-6 bg-purple-50 rounded-xl">
+                    <i class="fas fa-chart-pie text-3xl text-purple-600 mb-3"></i>
+                    <h3 class="font-semibold text-gray-800 mb-2" id="feature3Title">Результаты сразу</h3>
+                    <p class="text-sm text-gray-600" id="feature3Desc">Визуализация после опроса</p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button id="startSurveyBtn" class="gradient-bg text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-lg transition-all transform hover:scale-105">
+                    <i class="fas fa-play-circle mr-2"></i>
+                    <span id="startBtnText">Начать опрос</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Survey Form Section -->
+        <section id="surveySection" class="hidden">
+            
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl p-6 card-shadow mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-semibold text-gray-600" id="progressLabel">Прогресс</span>
+                    <span class="text-sm font-semibold text-purple-600" id="progressText">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="gradient-bg h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between mt-4 text-xs">
+                    <span class="progress-step active" id="step1Label">Шаг 1</span>
+                    <span class="progress-step" id="step2Label">Шаг 2</span>
+                    <span class="progress-step" id="step3Label">Шаг 3</span>
+                    <span class="progress-step" id="step4Label">Шаг 4</span>
+                </div>
+            </div>
+
+            <!-- Survey Form -->
+            <form id="surveyForm" class="space-y-6">
+                
+                <!-- Step 1: Role Selection -->
+                <div class="survey-step bg-white rounded-xl p-8 card-shadow question-card" data-step="1">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6" id="roleQuestion">
+                        <i class="fas fa-user-tag text-purple-600 mr-2"></i>
+                        Выберите вашу роль
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <input type="radio" name="user_role" value="student" id="role_student" class="hidden radio-custom">
+                        <label for="role_student" class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                            <i class="fas fa-user-graduate mr-3 text-purple-600"></i>
+                            <span class="font-medium" id="roleStudent">Ученик (10+ лет)</span>
+                        </label>
+                        
+                        <input type="radio" name="user_role" value="parent" id="role_parent" class="hidden radio-custom">
+                        <label for="role_parent" class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                            <i class="fas fa-users mr-3 text-blue-600"></i>
+                            <span class="font-medium" id="roleParent">Родитель / Законный представитель</span>
+                        </label>
+                        
+                        <input type="radio" name="user_role" value="teacher" id="role_teacher" class="hidden radio-custom">
+                        <label for="role_teacher" class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                            <i class="fas fa-chalkboard-teacher mr-3 text-green-600"></i>
+                            <span class="font-medium" id="roleTeacher">Учитель / Преподаватель</span>
+                        </label>
+                        
+                        <input type="radio" name="user_role" value="administrator" id="role_administrator" class="hidden radio-custom">
+                        <label for="role_administrator" class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                            <i class="fas fa-user-tie mr-3 text-orange-600"></i>
+                            <span class="font-medium" id="roleAdmin">Администратор (Директор, завуч)</span>
+                        </label>
+                        
+                        <input type="radio" name="user_role" value="it_teacher" id="role_it_teacher" class="hidden radio-custom">
+                        <label for="role_it_teacher" class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                            <i class="fas fa-laptop-code mr-3 text-red-600"></i>
+                            <span class="font-medium" id="roleIT">Учитель информатики / ИКТ-координатор</span>
+                        </label>
+                        
+                        <input type="radio" name="user_role" value="other" id="role_other" class="hidden radio-custom">
+                        <label for="role_other" class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                            <i class="fas fa-user mr-3 text-gray-600"></i>
+                            <span class="font-medium" id="roleOtherOption">Другое / Boshqa</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 2: Demographics -->
+                <div class="survey-step bg-white rounded-xl p-8 card-shadow question-card hidden" data-step="2">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6" id="demographicsTitle">
+                        <i class="fas fa-info-circle text-purple-600 mr-2"></i>
+                        Общая информация
+                    </h3>
+                    
+                    <!-- Helper text for students -->
+                    <div id="studentHelper" class="hidden mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            <span id="helperText">Эти вопросы помогут нам понять, какие школы участвуют в опросе. Твои ответы полностью анонимны!</span>
+                        </p>
+                    </div>
+                    
+                    <!-- Age Group (for students only) -->
+                    <div id="ageGroupContainer" class="mb-6 hidden">
+                        <label class="block text-gray-700 font-semibold mb-3" id="ageLabel">Возрастная группа</label>
+                        <select name="age_group" id="age_group" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-400 focus:outline-none">
+                            <option value="">-- Выберите --</option>
+                            <option value="10-12">10-12 лет</option>
+                            <option value="13-15">13-15 лет</option>
+                            <option value="16-18">16-18 лет</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Region -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="regionLabel">Регион</label>
+                        <select name="region" id="region" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-400 focus:outline-none">
+                            <option value="">-- Выберите регион --</option>
+                            <option value="tashkent_city">Tashkent City / Город Ташкент / Toshkent shahri</option>
+                            <option value="karakalpakstan">Republic of Karakalpakstan / Республика Каракалпакстан / Qoraqalpog'iston Respublikasi</option>
+                            <option value="andijan">Andijan Region / Андижанская область / Andijon viloyati</option>
+                            <option value="bukhara">Bukhara Region / Бухарская область / Buxoro viloyati</option>
+                            <option value="fergana">Fergana Region / Ферганская область / Farg'ona viloyati</option>
+                            <option value="jizzakh">Jizzakh Region / Джизакская область / Jizzax viloyati</option>
+                            <option value="khorezm">Khorezm Region / Хорезмская область / Xorazm viloyati</option>
+                            <option value="namangan">Namangan Region / Наманганская область / Namangan viloyati</option>
+                            <option value="navoiy">Navoiy Region / Навоийская область / Navoiy viloyati</option>
+                            <option value="qashqadaryo">Qashqadaryo Region / Кашкадарьинская область / Qashqadaryo viloyati</option>
+                            <option value="samarqand">Samarqand Region / Самаркандская область / Samarqand viloyati</option>
+                            <option value="sirdaryo">Sirdaryo Region / Сырдарьинская область / Sirdaryo viloyati</option>
+                            <option value="surxondaryo">Surxondaryo Region / Сурхандарьинская область / Surxondaryo viloyati</option>
+                            <option value="tashkent_region">Tashkent Region / Ташкентская область / Toshkent viloyati</option>
+                        </select>
+                    </div>
+                    
+                    <!-- School Type -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="schoolTypeLabel">Тип школы</label>
+                        <select name="school_type" id="school_type" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-400 focus:outline-none">
+                            <option value="" id="schoolTypePlaceholder">-- Выберите тип школы --</option>
+                            <option value="public" id="schoolTypePublic">Государственная общеобразовательная школа</option>
+                            <option value="specialized" id="schoolTypeSpecialized">Специализированная школа</option>
+                            <option value="lyceum" id="schoolTypeLyceum">Академический лицей</option>
+                            <option value="college" id="schoolTypeCollege">Профессиональный колледж</option>
+                            <option value="private" id="schoolTypePrivate">Частная школа</option>
+                            <option value="international" id="schoolTypeInternational">Международная школа</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Private Tutoring (for students only) -->
+                    <div id="privateTutoringContainer" class="mb-6 hidden">
+                        <label class="block text-gray-700 font-semibold mb-3" id="privateTutoringLabel">
+                            Занимаешься ли ты с репетитором (частные уроки после школы)?
+                        </label>
+                        
+                        <!-- Yes/No Selection -->
+                        <div class="space-y-2 mb-4">
+                            <input type="radio" name="uses_private_tutor" value="yes" id="tutor_yes" class="hidden radio-custom">
+                            <label for="tutor_yes" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="tutorYes">Да, занимаюсь с репетитором</span>
+                            </label>
+                            
+                            <input type="radio" name="uses_private_tutor" value="no" id="tutor_no" class="hidden radio-custom">
+                            <label for="tutor_no" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="tutorNo">Нет, не занимаюсь</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Reasons (shown only if "yes") -->
+                        <div id="tutorReasonsContainer" class="hidden mt-4">
+                            <label class="block text-gray-700 font-semibold mb-3" id="tutorReasonsLabel">
+                                Почему ты занимаешься с репетитором? (можно выбрать несколько)
+                            </label>
+                            
+                            <div class="space-y-2">
+                                <input type="checkbox" name="tutor_reasons" value="university_admission" id="reason_university" class="hidden checkbox-custom">
+                                <label for="reason_university" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-university mr-2 text-purple-600"></i>
+                                    <span class="font-medium" id="reasonUniversity">Для поступления в университет</span>
+                                </label>
+                                
+                                <input type="checkbox" name="tutor_reasons" value="good_grades" id="reason_grades" class="hidden checkbox-custom">
+                                <label for="reason_grades" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-star mr-2 text-yellow-600"></i>
+                                    <span class="font-medium" id="reasonGrades">Чтобы получать хорошие оценки</span>
+                                </label>
+                                
+                                <input type="checkbox" name="tutor_reasons" value="cannot_ask_teacher" id="reason_ask" class="hidden checkbox-custom">
+                                <label for="reason_ask" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-comment-slash mr-2 text-red-600"></i>
+                                    <span class="font-medium" id="reasonAsk">Не могу спросить учителя, если не понимаю</span>
+                                </label>
+                                
+                                <input type="checkbox" name="tutor_reasons" value="not_understand_school" id="reason_understand" class="hidden checkbox-custom">
+                                <label for="reason_understand" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-question-circle mr-2 text-orange-600"></i>
+                                    <span class="font-medium" id="reasonUnderstand">Не понимаю материал в школе</span>
+                                </label>
+                                
+                                <input type="checkbox" name="tutor_reasons" value="too_much_homework" id="reason_homework" class="hidden checkbox-custom">
+                                <label for="reason_homework" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-book mr-2 text-blue-600"></i>
+                                    <span class="font-medium" id="reasonHomework">Слишком много домашнего задания</span>
+                                </label>
+                                
+                                <input type="checkbox" name="tutor_reasons" value="parents_want" id="reason_parents" class="hidden checkbox-custom">
+                                <label for="reason_parents" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-users mr-2 text-green-600"></i>
+                                    <span class="font-medium" id="reasonParents">Родители хотят, чтобы я занимался</span>
+                                </label>
+                                
+                                <input type="checkbox" name="tutor_reasons" value="other" id="reason_other" class="hidden checkbox-custom">
+                                <label for="reason_other" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                    <i class="fas fa-ellipsis-h mr-2 text-gray-600"></i>
+                                    <span class="font-medium" id="reasonOther">Другая причина</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Digital Tools Usage -->
+                <div class="survey-step bg-white rounded-xl p-8 card-shadow question-card hidden" data-step="3">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6" id="digitalToolsTitle">
+                        <i class="fas fa-laptop text-purple-600 mr-2"></i>
+                        Использование цифровых инструментов
+                    </h3>
+                    
+                    <!-- Usage Frequency -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="usageFreqLabel">
+                            Как часто вы используете цифровые инструменты в процессе обучения?
+                        </label>
+                        <div class="space-y-2">
+                            <input type="radio" name="digital_tools_usage" value="daily" id="usage_daily" class="hidden radio-custom">
+                            <label for="usage_daily" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="usageDaily">Ежедневно</span>
+                            </label>
+                            
+                            <input type="radio" name="digital_tools_usage" value="several_times_week" id="usage_several" class="hidden radio-custom">
+                            <label for="usage_several" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="usageSeveral">Несколько раз в неделю</span>
+                            </label>
+                            
+                            <input type="radio" name="digital_tools_usage" value="once_week" id="usage_once" class="hidden radio-custom">
+                            <label for="usage_once" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="usageOnce">Раз в неделю</span>
+                            </label>
+                            
+                            <input type="radio" name="digital_tools_usage" value="rarely" id="usage_rarely" class="hidden radio-custom">
+                            <label for="usage_rarely" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="usageRarely">Редко</span>
+                            </label>
+                            
+                            <input type="radio" name="digital_tools_usage" value="never" id="usage_never" class="hidden radio-custom">
+                            <label for="usage_never" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="usageNever">Никогда</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Awareness -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="aiAwarenessLabel">
+                            Знакомы ли вы с инструментами на основе искусственного интеллекта (ИИ) для обучения?
+                        </label>
+                        <div class="space-y-2">
+                            <input type="radio" name="ai_tools_awareness" value="very_familiar" id="ai_very" class="hidden radio-custom">
+                            <label for="ai_very" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="aiVery">Очень хорошо знаком</span>
+                            </label>
+                            
+                            <input type="radio" name="ai_tools_awareness" value="somewhat_familiar" id="ai_somewhat" class="hidden radio-custom">
+                            <label for="ai_somewhat" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="aiSomewhat">Частично знаком</span>
+                            </label>
+                            
+                            <input type="radio" name="ai_tools_awareness" value="heard_about" id="ai_heard" class="hidden radio-custom">
+                            <label for="ai_heard" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="aiHeard">Слышал о них</span>
+                            </label>
+                            
+                            <input type="radio" name="ai_tools_awareness" value="not_familiar" id="ai_not" class="hidden radio-custom">
+                            <label for="ai_not" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="aiNot">Не знаком</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Tools Used -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="aiToolsUsedLabel">
+                            Какие инструменты на основе ИИ вы используете или знаете? (можно выбрать несколько)
+                        </label>
+                        
+                        <!-- Student-friendly explanation -->
+                        <div id="aiToolsHelper" class="hidden mb-4 p-3 bg-green-50 rounded-lg">
+                            <p class="text-sm text-green-800" id="aiToolsHelperText">
+                                💡 ИИ (искусственный интеллект) - это умные программы, которые могут отвечать на вопросы, помогать с домашним заданием, учить языки и многое другое!
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <input type="checkbox" name="ai_tools_used" value="chatgpt" id="tool_chatgpt" class="hidden checkbox-custom">
+                            <label for="tool_chatgpt" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-comments mr-2"></i>
+                                <span class="font-medium">ChatGPT</span>
+                                <span class="text-xs text-gray-500 ml-2" id="chatgptDesc">💬 Умный помощник для вопросов</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="google_bard" id="tool_bard" class="hidden checkbox-custom">
+                            <label for="tool_bard" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-robot mr-2"></i>
+                                <span class="font-medium">Google Gemini (Bard)</span>
+                                <span class="text-xs text-gray-500 ml-2" id="bardDesc">🤖 Помощник от Google</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="khan_academy" id="tool_khan" class="hidden checkbox-custom">
+                            <label for="tool_khan" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-book-open mr-2"></i>
+                                <span class="font-medium">Khan Academy (Khanmigo)</span>
+                                <span class="text-xs text-gray-500 ml-2" id="khanDesc">📚 Учёба по видео и заданиям</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="duolingo" id="tool_duolingo" class="hidden checkbox-custom">
+                            <label for="tool_duolingo" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-language mr-2"></i>
+                                <span class="font-medium">Duolingo</span>
+                                <span class="text-xs text-gray-500 ml-2" id="duolingoDesc">🗣️ Учим языки весело</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="quizlet" id="tool_quizlet" class="hidden checkbox-custom">
+                            <label for="tool_quizlet" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-clipboard-list mr-2"></i>
+                                <span class="font-medium">Quizlet</span>
+                                <span class="text-xs text-gray-500 ml-2" id="quizletDesc">📝 Карточки для запоминания</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="grammarly" id="tool_grammarly" class="hidden checkbox-custom">
+                            <label for="tool_grammarly" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-spell-check mr-2"></i>
+                                <span class="font-medium">Grammarly</span>
+                                <span class="text-xs text-gray-500 ml-2" id="grammarlyDesc">✍️ Проверка грамматики</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="canva" id="tool_canva" class="hidden checkbox-custom">
+                            <label for="tool_canva" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-paint-brush mr-2"></i>
+                                <span class="font-medium">Canva AI</span>
+                                <span class="text-xs text-gray-500 ml-2" id="canvaDesc">🎨 Создание картинок и презентаций</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="other" id="tool_other" class="hidden checkbox-custom">
+                            <label for="tool_other" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-ellipsis-h mr-2"></i>
+                                <span class="font-medium" id="toolOther">Другие</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_tools_used" value="none" id="tool_none" class="hidden checkbox-custom">
+                            <label for="tool_none" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-times mr-2"></i>
+                                <span class="font-medium" id="toolNone">Не использую</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Assessment & Feedback -->
+                <div class="survey-step bg-white rounded-xl p-8 card-shadow question-card hidden" data-step="4">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6" id="assessmentTitle">
+                        <i class="fas fa-star text-purple-600 mr-2"></i>
+                        Оценка и обратная связь
+                    </h3>
+                    
+                    <!-- Effectiveness Rating -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="effectivenessLabel">
+                            Оцените эффективность цифровых инструментов в обучении (1-5)
+                        </label>
+                        <div class="flex space-x-3 justify-center">
+                            <input type="radio" name="effectiveness_rating" value="1" id="rating_1" class="hidden">
+                            <label for="rating_1" class="cursor-pointer text-4xl hover:scale-110 transition-transform rating-star" data-rating="1">⭐</label>
+                            
+                            <input type="radio" name="effectiveness_rating" value="2" id="rating_2" class="hidden">
+                            <label for="rating_2" class="cursor-pointer text-4xl hover:scale-110 transition-transform rating-star" data-rating="2">⭐</label>
+                            
+                            <input type="radio" name="effectiveness_rating" value="3" id="rating_3" class="hidden">
+                            <label for="rating_3" class="cursor-pointer text-4xl hover:scale-110 transition-transform rating-star" data-rating="3">⭐</label>
+                            
+                            <input type="radio" name="effectiveness_rating" value="4" id="rating_4" class="hidden">
+                            <label for="rating_4" class="cursor-pointer text-4xl hover:scale-110 transition-transform rating-star" data-rating="4">⭐</label>
+                            
+                            <input type="radio" name="effectiveness_rating" value="5" id="rating_5" class="hidden">
+                            <label for="rating_5" class="cursor-pointer text-4xl hover:scale-110 transition-transform rating-star" data-rating="5">⭐</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Challenges -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="challengesLabel">
+                            С какими проблемами вы сталкиваетесь при использовании цифровых инструментов?
+                        </label>
+                        <div class="space-y-2">
+                            <input type="checkbox" name="challenges" value="internet_quality" id="challenge_internet" class="hidden checkbox-custom">
+                            <label for="challenge_internet" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="challengeInternet">Качество интернета</span>
+                            </label>
+                            
+                            <input type="checkbox" name="challenges" value="device_access" id="challenge_device" class="hidden checkbox-custom">
+                            <label for="challenge_device" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="challengeDevice">Доступ к устройствам</span>
+                            </label>
+                            
+                            <input type="checkbox" name="challenges" value="technical_skills" id="challenge_skills" class="hidden checkbox-custom">
+                            <label for="challenge_skills" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="challengeSkills">Недостаток навыков</span>
+                            </label>
+                            
+                            <input type="checkbox" name="challenges" value="language_barrier" id="challenge_language" class="hidden checkbox-custom">
+                            <label for="challenge_language" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="challengeLanguage">Языковой барьер</span>
+                            </label>
+                            
+                            <input type="checkbox" name="challenges" value="content_quality" id="challenge_content" class="hidden checkbox-custom">
+                            <label for="challenge_content" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="challengeContent">Качество контента</span>
+                            </label>
+                            
+                            <input type="checkbox" name="challenges" value="no_challenges" id="challenge_none" class="hidden checkbox-custom">
+                            <label for="challenge_none" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="challengeNone">Нет проблем</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Internet Access -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="internetLabel">
+                            Качество интернет-доступа в школе/дома
+                        </label>
+                        <select name="internet_access" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-400 focus:outline-none">
+                            <option value="">-- Выберите --</option>
+                            <option value="excellent" id="internetExcellent">Отличное</option>
+                            <option value="good" id="internetGood">Хорошее</option>
+                            <option value="average" id="internetAverage">Среднее</option>
+                            <option value="poor" id="internetPoor">Плохое</option>
+                            <option value="no_access" id="internetNo">Нет доступа</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Device Availability -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="deviceLabel">
+                            Доступность устройств (компьютер, планшет, смартфон)
+                        </label>
+                        <select name="device_availability" required class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-400 focus:outline-none">
+                            <option value="">-- Выберите --</option>
+                            <option value="always_available" id="deviceAlways">Всегда доступны</option>
+                            <option value="mostly_available" id="deviceMostly">Часто доступны</option>
+                            <option value="sometimes_available" id="deviceSometimes">Иногда доступны</option>
+                            <option value="rarely_available" id="deviceRarely">Редко доступны</option>
+                            <option value="not_available" id="deviceNot">Недоступны</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Training Needs -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="trainingLabel">
+                            Нужно ли вам обучение по использованию цифровых инструментов?
+                        </label>
+                        <div class="space-y-2">
+                            <input type="radio" name="training_needs" value="definitely_yes" id="training_definitely" class="hidden radio-custom">
+                            <label for="training_definitely" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="trainingDefinitely">Определённо да</span>
+                            </label>
+                            
+                            <input type="radio" name="training_needs" value="probably_yes" id="training_probably" class="hidden radio-custom">
+                            <label for="training_probably" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="trainingProbably">Вероятно да</span>
+                            </label>
+                            
+                            <input type="radio" name="training_needs" value="not_sure" id="training_unsure" class="hidden radio-custom">
+                            <label for="training_unsure" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="trainingUnsure">Не уверен</span>
+                            </label>
+                            
+                            <input type="radio" name="training_needs" value="probably_no" id="training_probablyno" class="hidden radio-custom">
+                            <label for="training_probablyno" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="trainingProbablyNo">Вероятно нет</span>
+                            </label>
+                            
+                            <input type="radio" name="training_needs" value="definitely_no" id="training_no" class="hidden radio-custom">
+                            <label for="training_no" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <span class="font-medium" id="trainingNo">Определённо нет</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Impact on Teacher's Role -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="teacherTransformLabel">
+                            Как изменится роль учителя с ИИ в ближайшие три года? (можно выбрать несколько)
+                        </label>
+                        
+                        <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                            <p class="text-sm text-blue-800" id="teacherTransformHelper">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Поделитесь своими мыслями о том, как искусственный интеллект изменит работу учителей.
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <input type="checkbox" name="ai_teacher_transformation" value="less_explaining_more_organizing" id="transform_organizing" class="hidden checkbox-custom">
+                            <label for="transform_organizing" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-tasks mr-2 text-blue-600"></i>
+                                <span class="font-medium" id="transform1Text">Учителя будут меньше времени объяснять и больше организовывать учебную деятельность</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_teacher_transformation" value="more_feedback_ai_grading" id="transform_feedback" class="hidden checkbox-custom">
+                            <label for="transform_feedback" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-comments mr-2 text-green-600"></i>
+                                <span class="font-medium" id="transform2Text">Учителя будут давать больше обратной связи и поддержки, а ИИ поможет с проверкой работ</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_teacher_transformation" value="personalized_learning_pace" id="transform_personalized" class="hidden checkbox-custom">
+                            <label for="transform_personalized" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-user-clock mr-2 text-purple-600"></i>
+                                <span class="font-medium" id="transform3Text">Учителя будут помогать ученикам учиться в своём темпе с помощью ИИ-инструментов</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_teacher_transformation" value="focus_thinking_not_memorization" id="transform_thinking" class="hidden checkbox-custom">
+                            <label for="transform_thinking" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-brain mr-2 text-pink-600"></i>
+                                <span class="font-medium" id="transform4Text">Учителя будут больше внимания уделять мышлению, обсуждению и решению проблем, а не запоминанию</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_teacher_transformation" value="mentors_motivators" id="transform_mentor" class="hidden checkbox-custom">
+                            <label for="transform_mentor" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-hands-helping mr-2 text-orange-600"></i>
+                                <span class="font-medium" id="transform5Text">Учителя будут больше выступать в роли наставников и мотиваторов для учеников</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_teacher_transformation" value="use_learning_data" id="transform_data" class="hidden checkbox-custom">
+                            <label for="transform_data" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-chart-line mr-2 text-teal-600"></i>
+                                <span class="font-medium" id="transform6Text">Учителя будут использовать данные об обучении от ИИ для лучшей поддержки учеников</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_teacher_transformation" value="need_new_skills" id="transform_skills" class="hidden checkbox-custom">
+                            <label for="transform_skills" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-graduation-cap mr-2 text-red-600"></i>
+                                <span class="font-medium" id="transform7Text">Учителям потребуются новые навыки для работы с ИИ в классе</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- AI Language Preferences -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-3" id="aiLanguageLabel">
+                            На каком языке вы хотели бы использовать инструменты ИИ? (можно выбрать несколько, в порядке важности)
+                        </label>
+                        
+                        <!-- Student-friendly explanation -->
+                        <div id="aiLanguageHelper" class="hidden mb-4 p-3 bg-purple-50 rounded-lg">
+                            <p class="text-sm text-purple-800" id="aiLanguageHelperText">
+                                🌍 Выбери языки, на которых тебе удобнее учиться. Можно выбрать несколько!
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <input type="checkbox" name="ai_language_preference" value="uzbek" id="lang_uzbek" class="hidden checkbox-custom">
+                            <label for="lang_uzbek" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-globe mr-2 text-blue-600"></i>
+                                <span class="font-medium">O'zbek tili / Узбекский язык</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_language_preference" value="english" id="lang_english" class="hidden checkbox-custom">
+                            <label for="lang_english" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-globe mr-2 text-red-600"></i>
+                                <span class="font-medium">English / Английский язык</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_language_preference" value="russian" id="lang_russian" class="hidden checkbox-custom">
+                            <label for="lang_russian" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-globe mr-2 text-blue-800"></i>
+                                <span class="font-medium">Русский язык</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_language_preference" value="tajik" id="lang_tajik" class="hidden checkbox-custom">
+                            <label for="lang_tajik" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-globe mr-2 text-green-700"></i>
+                                <span class="font-medium">Тоҷикӣ / Таджикский язык</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_language_preference" value="karakalpak" id="lang_karakalpak" class="hidden checkbox-custom">
+                            <label for="lang_karakalpak" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-globe mr-2 text-teal-600"></i>
+                                <span class="font-medium">Qaraqalpaq tili / Каракалпакский язык</span>
+                            </label>
+                            
+                            <input type="checkbox" name="ai_language_preference" value="other" id="lang_other" class="hidden checkbox-custom">
+                            <label for="lang_other" class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all">
+                                <i class="fas fa-language mr-2 text-gray-600"></i>
+                                <span class="font-medium" id="langOther">Другой язык / Boshqa til</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between items-center bg-white rounded-xl p-6 card-shadow">
+                    <button type="button" id="prevBtn" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all hidden">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span id="prevBtnText">Назад</span>
+                    </button>
+                    
+                    <button type="button" id="nextBtn" class="ml-auto px-6 py-3 gradient-bg text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                        <span id="nextBtnText">Далее</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    
+                    <button type="submit" id="submitBtn" class="hidden ml-auto px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 hover:shadow-lg transition-all">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span id="submitBtnText">Отправить ответы</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden">
+            <div class="bg-white rounded-2xl p-8 card-shadow mb-8 text-center">
+                <div class="inline-block bg-green-100 rounded-full p-4 mb-4">
+                    <i class="fas fa-check-circle text-5xl text-green-600"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4" id="thanksTitle">Спасибо за участие!</h2>
+                <p class="text-lg text-gray-600 mb-6" id="thanksMessage">
+                    Ваши ответы помогут улучшить качество образования с использованием цифровых технологий.
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-8 card-shadow mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-chart-bar text-purple-600 mr-3"></i>
+                    <span id="resultsTitle">Результаты опроса</span>
+                </h3>
+                
+                <!-- Role Distribution Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="roleDistTitle">Распределение участников по ролям</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="roleChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Usage Frequency Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="usageChartTitle">Частота использования цифровых инструментов</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="usageChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- AI Tools Awareness Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="aiAwarenessChartTitle">Осведомлённость об инструментах ИИ</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="aiAwarenessChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Effectiveness Rating Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="effectivenessChartTitle">Оценка эффективности</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="effectivenessChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Challenges Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="challengesChartTitle">Основные проблемы</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="challengesChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Language Preferences Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="languageChartTitle">Предпочитаемые языки для AI инструментов</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="languageChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Private Tutoring Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="tutoringChartTitle">Использование репетиторов (только учащиеся)</h4>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="tutoringChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Teacher Transformation Chart -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700 mb-4" id="teacherTransformChartTitle">Как изменится роль учителя с AI</h4>
+                    <div class="chart-container" style="height: 500px;">
+                        <canvas id="teacherTransformChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button id="newSurveyBtn" class="gradient-bg text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-redo mr-2"></i>
+                    <span id="newSurveyBtnText">Пройти опрос снова</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <!-- Main Footer Text -->
+            <div class="text-center mb-6">
+                <p class="text-sm" id="footerText">
+                    © 2026 Опрос об образовании и цифровых инструментах | Все данные анонимны
+                </p>
+            </div>
+            
+            <!-- Disclaimer Section -->
+            <div class="border-t border-gray-700 pt-6">
+                <div class="max-w-4xl mx-auto">
+                    <p class="text-xs text-gray-400 text-center leading-relaxed">
+                        <span class="block mb-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Prepared by <strong class="text-gray-300">Mr. Azamat Abdymomunov</strong> | TF0C5368
+                        </span>
+                        <span class="block mb-1">
+                            <strong class="text-gray-300">Uzbekistan Education System Capacity Building Project</strong>
+                        </span>
+                        <span class="block">
+                            Consulting Services for Supporting the Integration of Artificial Intelligence (AI) in Education Policies
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/translations.js"></script>
+    <script src="js/age-appropriate.js"></script>
+    <script src="js/survey.js"></script>
+    <script src="js/visualization.js"></script>
+</body>
+</html>
